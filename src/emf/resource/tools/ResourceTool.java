@@ -41,10 +41,12 @@ import com.google.inject.Injector;
 public class ResourceTool {
 
 	private Logger log;
-	protected String dbServer = "localhost";
-	protected String dbUser = "cvsanaly";
-	protected String dbPass = "cvsanaly";
-	protected String dbPort = "3306";
+	//TODO: figure out why other accounts don't work
+	//TODO: export to settings model or paratmeters or something
+	private String dbServer = "172.16.179.131";
+	private String dbUser = "root";
+	private String dbPass = "root";
+	private String dbPort = "3306";
 	protected Injector injector;
 
 	public ResourceTool(String loggedClass) {
@@ -160,7 +162,7 @@ public class ResourceTool {
 		//*************** Initialize Teneo Hibernate DataStore *************************************
 		HbDataStore hbds = (HbDataStore) HbHelper.INSTANCE.createRegisterDataStore(dbName);
 		//Set Database properties
-		Properties props = initializeDataStoreProperties(dbServer, dbName, dbUser, dbPass);
+		Properties props = initializeDataStoreProperties(dbServer, dbName, getDbUser(), getDbPass());
 		
 		hbds.setDataStoreProperties(props);
 		hbds.setEPackages(epackages);
@@ -170,7 +172,7 @@ public class ResourceTool {
 	protected Properties initializeDataStoreProperties(String dbServer, String dbName, String dbUser, String dbPass) {
 		Properties props = new Properties();
 		props.setProperty(Environment.DRIVER, "com.mysql.jdbc.Driver");
-		props.setProperty(Environment.URL, "jdbc:mysql://"+dbServer+":"+dbPort+"/"+dbName);
+		props.setProperty(Environment.URL, "jdbc:mysql://"+dbServer+":"+getDbPort()+"/"+dbName);
 		props.setProperty(Environment.USER, dbUser);
 		props.setProperty(Environment.PASS, dbPass);
 		props.setProperty(Environment.DIALECT,  org.hibernate.dialect.MySQL5InnoDBDialect.class.getName());
@@ -234,6 +236,38 @@ public class ResourceTool {
 
 	public void setLog(Logger log) {
 		this.log = log;
+	}
+
+	public String getDbServer() {
+		return dbServer;
+	}
+
+	public void setDbServer(String dbServer) {
+		this.dbServer = dbServer;
+	}
+
+	public String getDbUser() {
+		return dbUser;
+	}
+
+	public void setDbUser(String dbUser) {
+		this.dbUser = dbUser;
+	}
+
+	public String getDbPass() {
+		return dbPass;
+	}
+
+	public void setDbPass(String dbPass) {
+		this.dbPass = dbPass;
+	}
+
+	public String getDbPort() {
+		return dbPort;
+	}
+
+	public void setDbPort(String dbPort) {
+		this.dbPort = dbPort;
 	}
 
 }

@@ -176,7 +176,7 @@ public class ResourceTool {
 		props.setProperty(Environment.USER, dbUser);
 		props.setProperty(Environment.PASS, dbPass);
 		props.setProperty(Environment.DIALECT,  org.hibernate.dialect.MySQL5InnoDBDialect.class.getName());
-		props.setProperty(Environment.SHOW_SQL, "true");
+		//props.setProperty(Environment.SHOW_SQL, "true");
 		props.setProperty(Environment.HBM2DDL_AUTO, "update");
 		props.setProperty(PersistenceOptions.INHERITANCE_MAPPING, "JOINED");
 		props.setProperty(PersistenceOptions.MAXIMUM_SQL_NAME_LENGTH, "60");

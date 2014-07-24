@@ -16,6 +16,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.BinaryResourceImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.Diagnostician;
 import org.eclipse.emf.ecore.util.EObjectValidator;
@@ -92,6 +93,32 @@ public class ResourceTool {
 		return inputResource;
 	}
 
+	@SuppressWarnings({ "rawtypes" })
+	public Resource loadResourceFromBinary(String inputPath, String extension) {
+	    Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
+	    Map<String, Object> m = reg.getExtensionToFactoryMap();
+	    m.put(extension, new Resource.Factory() {
+
+			@Override
+			public Resource createResource(URI uri) {
+				return new BinaryResourceImpl(uri);
+			}
+			
+		});	    
+	    
+	    ResourceSet resSetIn = new ResourceSetImpl();
+	    Resource inputResource = resSetIn.createResource(URI.createURI(inputPath));
+	    try {
+	    	Map options = new HashMap<>();
+//	    	options.put(XMIResourceImpl.OPTION_DEFER_IDREF_RESOLUTION, Boolean.TRUE);
+//	    	options.put(XMIResourceImpl.OPTION_PROCESS_DANGLING_HREF, XMIResourceImpl.OPTION_PROCESS_DANGLING_HREF_DISCARD);
+			inputResource.load(options);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return inputResource;
+	}
+
 	protected void initializeValidator() {
 	//		OCL.initialize(null);
 			String oclDelegateURI = OCLConstants.OCL_DELEGATE_URI+"/Pivot";
@@ -134,6 +161,32 @@ public class ResourceTool {
 		}
 	}
 
+	@SuppressWarnings({ "rawtypes" })
+	protected void storeBinaryResourceContents(EList<EObject> contents, String outputPath, String extension) {
+		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
+	    Map<String, Object> m = reg.getExtensionToFactoryMap();
+		m.put(extension, new Resource.Factory() {
+
+			@Override
+			public Resource createResource(URI uri) {
+				return new BinaryResourceImpl(uri);
+			}
+			
+		});
+		
+	    ResourceSet resSet = new ResourceSetImpl();
+		Resource outputResource = resSet.createResource(URI.createURI(outputPath));
+	    outputResource.getContents().addAll(contents);
+	    try {
+	      Map options = new HashMap<>();
+//	      options.put(XMIResourceImpl.OPTION_PROCESS_DANGLING_HREF, XMIResourceImpl.OPTION_PROCESS_DANGLING_HREF_DISCARD);
+	      outputResource.save(options);
+	    } catch (IOException e) {
+	      e.printStackTrace();
+	    }
+	}
+
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected void storeResourceContents(EList<EObject> contents, String outputPath, String extension) {
 		//TODO: duplicated from loadResourceFromXMI => move to a more appropriate location

@@ -162,7 +162,7 @@ public class ResourceTool {
 	}
 
 	@SuppressWarnings({ "rawtypes" })
-	protected void storeBinaryResourceContents(EList<EObject> contents, String outputPath, String extension) {
+	public void storeBinaryResourceContents(EList<EObject> contents, String outputPath, String extension) {
 		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
 	    Map<String, Object> m = reg.getExtensionToFactoryMap();
 		m.put(extension, new Resource.Factory() {
@@ -188,7 +188,7 @@ public class ResourceTool {
 
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected void storeResourceContents(EList<EObject> contents, String outputPath, String extension) {
+	public void storeResourceContents(EList<EObject> contents, String outputPath, String extension) {
 		//TODO: duplicated from loadResourceFromXMI => move to a more appropriate location
 		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
 	    Map<String, Object> m = reg.getExtensionToFactoryMap();

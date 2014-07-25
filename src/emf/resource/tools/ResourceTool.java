@@ -75,6 +75,28 @@ public class ResourceTool {
 		return resource;
 	}
 
+	//TODO: workarounds copied from respective methods without EPackage parameter
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Resource loadResourceFromXMI(String inputPath, String extension, EPackage p) {
+	    Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
+	    Map<String, Object> m = reg.getExtensionToFactoryMap();
+		m.put(extension, new XMIResourceFactoryImpl());
+	    ResourceSet resSetIn = new ResourceSetImpl();
+	    //critical part
+	    resSetIn.getPackageRegistry().put(p.getNsURI(), p);
+
+	    Resource inputResource = resSetIn.createResource(URI.createURI(inputPath));
+	    try {
+	    	Map options = new HashMap<>();
+	    	options.put(XMIResourceImpl.OPTION_DEFER_IDREF_RESOLUTION, Boolean.TRUE);
+//	    	options.put(XMIResourceImpl.OPTION_PROCESS_DANGLING_HREF, XMIResourceImpl.OPTION_PROCESS_DANGLING_HREF_DISCARD);
+			inputResource.load(options);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return inputResource;
+	}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Resource loadResourceFromXMI(String inputPath, String extension) {
 	    Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
@@ -85,6 +107,36 @@ public class ResourceTool {
 	    try {
 	    	Map options = new HashMap<>();
 	    	options.put(XMIResourceImpl.OPTION_DEFER_IDREF_RESOLUTION, Boolean.TRUE);
+//	    	options.put(XMIResourceImpl.OPTION_PROCESS_DANGLING_HREF, XMIResourceImpl.OPTION_PROCESS_DANGLING_HREF_DISCARD);
+			inputResource.load(options);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return inputResource;
+	}
+
+	//TODO: workarounds copied from respective methods without EPackage parameter
+	@SuppressWarnings({ "rawtypes" })
+	public Resource loadResourceFromBinary(String inputPath, String extension, EPackage p) {
+	    Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
+	    Map<String, Object> m = reg.getExtensionToFactoryMap();
+	    m.put(extension, new Resource.Factory() {
+
+			@Override
+			public Resource createResource(URI uri) {
+				return new BinaryResourceImpl(uri);
+			}
+			
+		});	    
+	    
+	    ResourceSet resSetIn = new ResourceSetImpl();
+	    //critical part
+	    resSetIn.getPackageRegistry().put(p.getNsURI(), p);
+
+	    Resource inputResource = resSetIn.createResource(URI.createURI(inputPath));
+	    try {
+	    	Map options = new HashMap<>();
+//	    	options.put(XMIResourceImpl.OPTION_DEFER_IDREF_RESOLUTION, Boolean.TRUE);
 //	    	options.put(XMIResourceImpl.OPTION_PROCESS_DANGLING_HREF, XMIResourceImpl.OPTION_PROCESS_DANGLING_HREF_DISCARD);
 			inputResource.load(options);
 		} catch (IOException e) {

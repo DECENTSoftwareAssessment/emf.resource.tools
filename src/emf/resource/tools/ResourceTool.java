@@ -1,5 +1,6 @@
 package emf.resource.tools;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,9 +18,9 @@ import org.eclipse.emf.ecore.EValidator;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.BinaryResourceImpl;
+import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.Diagnostician;
-import org.eclipse.emf.ecore.util.EObjectValidator;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 import org.eclipse.emf.teneo.PersistenceOptions;
@@ -41,6 +42,7 @@ import com.google.inject.Injector;
 
 public class ResourceTool {
 
+	protected ResourceFactoryImpl resourceFactory = new XMIResourceFactoryImpl();
 	private Logger log;
 	//TODO: figure out why other accounts don't work
 	//TODO: export to settings model or paratmeters or something
@@ -80,7 +82,7 @@ public class ResourceTool {
 	public Resource loadResourceFromXMI(String inputPath, String extension, EPackage p) {
 	    Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
 	    Map<String, Object> m = reg.getExtensionToFactoryMap();
-		m.put(extension, new XMIResourceFactoryImpl());
+		m.put(extension, resourceFactory);
 	    ResourceSet resSetIn = new ResourceSetImpl();
 	    //critical part
 	    resSetIn.getPackageRegistry().put(p.getNsURI(), p);
@@ -101,7 +103,7 @@ public class ResourceTool {
 	public Resource loadResourceFromXMI(String inputPath, String extension) {
 	    Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
 	    Map<String, Object> m = reg.getExtensionToFactoryMap();
-		m.put(extension, new XMIResourceFactoryImpl());
+		m.put(extension, resourceFactory);
 	    ResourceSet resSetIn = new ResourceSetImpl();
 	    Resource inputResource = resSetIn.createResource(URI.createURI(inputPath));
 	    try {
@@ -134,14 +136,17 @@ public class ResourceTool {
 	    resSetIn.getPackageRegistry().put(p.getNsURI(), p);
 
 	    Resource inputResource = resSetIn.createResource(URI.createURI(inputPath));
-	    try {
-	    	Map options = new HashMap<>();
-//	    	options.put(XMIResourceImpl.OPTION_DEFER_IDREF_RESOLUTION, Boolean.TRUE);
-//	    	options.put(XMIResourceImpl.OPTION_PROCESS_DANGLING_HREF, XMIResourceImpl.OPTION_PROCESS_DANGLING_HREF_DISCARD);
-			inputResource.load(options);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	    if (new File(inputPath).exists()) {
+	    	
+		    try {
+		    	Map options = new HashMap<>();
+	//	    	options.put(XMIResourceImpl.OPTION_DEFER_IDREF_RESOLUTION, Boolean.TRUE);
+	//	    	options.put(XMIResourceImpl.OPTION_PROCESS_DANGLING_HREF, XMIResourceImpl.OPTION_PROCESS_DANGLING_HREF_DISCARD);
+				inputResource.load(options);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+	    }
 		return inputResource;
 	}
 
@@ -244,7 +249,7 @@ public class ResourceTool {
 		//TODO: duplicated from loadResourceFromXMI => move to a more appropriate location
 		Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
 	    Map<String, Object> m = reg.getExtensionToFactoryMap();
-		m.put(extension, new XMIResourceFactoryImpl());
+		m.put(extension, resourceFactory);
 		
 	    ResourceSet resSet = new ResourceSetImpl();
 		Resource outputResource = resSet.createResource(URI.createURI(outputPath));

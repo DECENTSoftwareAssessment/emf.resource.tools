@@ -117,6 +117,28 @@ public class ResourceTool {
 		return inputResource;
 	}
 
+	@SuppressWarnings({ "rawtypes" })
+	public Resource getResourceFromBinary(String inputPath, String extension, EPackage p) {
+	    Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
+	    Map<String, Object> m = reg.getExtensionToFactoryMap();
+	    m.put(extension, new Resource.Factory() {
+
+			@Override
+			public Resource createResource(URI uri) {
+				return new BinaryResourceImpl(uri);
+			}
+			
+		});	    
+	    
+	    ResourceSet resSetIn = new ResourceSetImpl();
+	    //critical part
+	    resSetIn.getPackageRegistry().put(p.getNsURI(), p);
+
+	    Resource inputResource = resSetIn.createResource(URI.createURI(inputPath));
+		return inputResource;
+	}
+
+	
 	//TODO: workarounds copied from respective methods without EPackage parameter
 	@SuppressWarnings({ "rawtypes" })
 	public Resource loadResourceFromBinary(String inputPath, String extension, EPackage p) {
@@ -140,7 +162,7 @@ public class ResourceTool {
 	    	
 		    try {
 		    	Map options = new HashMap<>();
-	//	    	options.put(XMIResourceImpl.OPTION_DEFER_IDREF_RESOLUTION, Boolean.TRUE);
+//		    	options.put(BinaryResourceImpl.OPTION_DEFER_IDREF_RESOLUTION, Boolean.TRUE);
 	//	    	options.put(XMIResourceImpl.OPTION_PROCESS_DANGLING_HREF, XMIResourceImpl.OPTION_PROCESS_DANGLING_HREF_DISCARD);
 				inputResource.load(options);
 			} catch (IOException e) {

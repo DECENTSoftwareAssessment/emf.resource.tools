@@ -45,12 +45,10 @@ public class ResourceTool {
 
 	protected ResourceFactoryImpl resourceFactory = new XMIResourceFactoryImpl();
 	private Logger log;
-	//TODO: figure out why other accounts don't work
-	//TODO: export to settings model or paratmeters or something
-	private String dbServer = "172.16.179.131";
-	private String dbUser = "root";
-	private String dbPass = "root";
-	private String dbPort = "3306";
+	private String dbServer;
+	private String dbUser;
+	private String dbPass;
+	private String dbPort;
 	protected Injector injector;
 
 	public ResourceTool(String loggedClass) {

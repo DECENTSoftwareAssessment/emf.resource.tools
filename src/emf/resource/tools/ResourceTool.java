@@ -21,6 +21,7 @@ import org.eclipse.emf.ecore.resource.impl.BinaryResourceImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.Diagnostician;
+import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 import org.eclipse.emf.teneo.PersistenceOptions;
@@ -163,6 +164,7 @@ public class ResourceTool {
 		    try {
 		    	Map options = new HashMap<>();
 //		    	options.put(BinaryResourceImpl.OPTION_DEFER_IDREF_RESOLUTION, Boolean.TRUE);
+//		    	options.put(BinaryResourceImpl.OPTION_DEFER_IDREF_RESOLUTION, Boolean.TRUE);
 	//	    	options.put(XMIResourceImpl.OPTION_PROCESS_DANGLING_HREF, XMIResourceImpl.OPTION_PROCESS_DANGLING_HREF_DISCARD);
 				inputResource.load(options);
 			} catch (IOException e) {
@@ -301,6 +303,16 @@ public class ResourceTool {
 		hbds.initialize();
 	}
 
+	public boolean isInitializedDB(String dbName, EPackage[] epackages) {
+		HbDataStore hbds = (HbDataStore) HbHelper.INSTANCE.createRegisterDataStore(dbName);
+		//Set Database properties
+		Properties props = initializeDataStoreProperties(dbServer, dbName, getDbUser(), getDbPass());
+		
+		hbds.setDataStoreProperties(props);
+		hbds.setEPackages(epackages);
+		return hbds.isInitialized();
+	}
+	
 	protected Properties initializeDataStoreProperties(String dbServer, String dbName, String dbUser, String dbPass) {
 		Properties props = new Properties();
 		props.setProperty(Environment.DRIVER, "com.mysql.jdbc.Driver");
